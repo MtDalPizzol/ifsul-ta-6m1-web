@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <ui:composition template="/templates/template.xhtml">
+        <ui:define name="titulo">Manutenção de técnicas</ui:define>
+        <ui:define name="conteudo">
+            <h:form id="formListagem">
+                <h:panelGroup rendered="#{!controleEstudo.editando}">
+                    <p:messages/>
+                    <p:commandButton value="Iniciar novo estudo" icon="ui-icon-plus"
+                                     actionListener="#{controleEstudo.novo()}"
+                                     update="formEdicao formListagem"/>
+                    <br/><br/>
+                    <p:dataTable value="#{controleEstudo.dao.listaObjetos}" var="obj"
+                                 reflow="true" id="listagem">
+                        <f:facet name="header">
+                            <div class="fluid">
+                                <p:panelGrid columns="4" styleClass="ui-panelgrid-blank" layout="grid"
+                                             columnClasses="col-md-3,col-md-3,col-md-3,col-md-3">
+
+                                    <p:column>
+                                        <p:outputLabel value="Ordem:" style="width: 100%;"/>
+                                        <p:selectOneMenu value="#{controleEstudo.dao.ordem}">
+                                            <f:selectItem itemLabel="ID" itemValue="id"/>
+                                            <f:selectItem itemLabel="Instrumento" itemValue="instrumento"/>
+                                            <p:ajax update="listagem"/>
+                                        </p:selectOneMenu>
+                                    </p:column>                                    
+
+                                    <p:column>
+                                        <p:outputLabel value="Filtro:" style="width: 100%"/>
+                                        <p:inputText value="#{controleEstudo.dao.filtro}">
+                                            <p:ajax event="keyup" delay="1000" update="listagem"/>
+                                        </p:inputText>
+                                    </p:column>                                                                        
+
+                                    <p:column>
+                                        <p:outputLabel value="Máximo de objetos:" style="width: 100%"/>
+                                        <p:inputText value="#{controleEstudo.dao.maximoObjetos}" size="5">
+                                            <p:ajax event="keyup" update="listagem"/>
+                                        </p:inputText>
+                                    </p:column>
+
+                                    <p:column>
+                                        <p:commandButton value="Filtrar" update="listagem" icon="ui-icon-search" style="margin-top: 16px;"/>
+                                    </p:column>
+
+                                </p:panelGrid>
+                            </div>
+                        </f:facet>
+                        <f:facet name="footer"> 
+                            <p:outputLabel value="#{controleEstudo.dao.mensagemNavegacao} &nbsp; &nbsp;"/>
+                            <p:commandButton action="#{controleEstudo.dao.primeiro()}"
+                                             icon="ui-icon-seek-first" title="Primeiro" update="listagem"/>
+                            <p:commandButton action="#{controleEstudo.dao.anterior()}"
+                                             icon="ui-icon-seek-prev" title="Anterior" update="listagem"/>
+                            <p:commandButton action="#{controleEstudo.dao.proximo()}"
+                                             icon="ui-icon-seek-next" title="Próximo" update="listagem"/>
+                            <p:commandButton action="#{controleEstudo.dao.ultimo()}"
+                                             icon="ui-icon-seek-end" title="Ultimo" update="listagem"/>                                                        
+                        </f:facet>                        
+                        <p:column headerText="Dia e hora">
+                            <p:outputLabel value="#{obj.data}">
+                                <f:converter converterId="converterDiaHora" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Instrumento">
+                            <p:outputLabel value="#{obj.instrumento}"/>
+                        </p:column>
+                        <p:column headerText="Ações">
+                            <div align="center">
+                                <p:commandButton icon="ui-icon-pencil"
+                                                 actionListener="#{controleEstudo.alterar(obj.id)}"
+                                                 process="@form"
+                                                 update=":formEdicao formListagem"/>
+                                <p:commandButton icon="ui-icon-trash"
+                                                 actionListener="#{controleEstudo.excluir(obj.id)}"
+                                                 process="@form" update=":formListagem"/>
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:form>
+            <ui:include src="formulario.xhtml"/>
+        </ui:define>
+    </ui:composition>
+</html>
+

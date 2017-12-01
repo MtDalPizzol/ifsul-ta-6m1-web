@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form id="formEdicao">
+        <h:panelGroup rendered="#{controleExercicio.editando}">
+            <div class="ui-fluid">
+                <p:messages/>
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10"
+                             layout="grid">
+                    <f:facet name="header">
+                        <p:outputLabel value="Edição de exercícios"/>
+                    </f:facet>
+                    <f:facet name="footer">
+                        <div align="center">
+                            <p:commandButton value="Salvar" icon="ui-icon-disk"
+                                             actionListener="#{controleExercicio.salvar()}"
+                                             update="formEdicao :formListagem"/>
+                        </div>
+                    </f:facet>
+                    <p:outputLabel for="txtNome" value="Nome"/>
+                    <p:inputText id="txtNome" value="#{controleExercicio.objeto.nome}"
+                                 size="80" maxlength="80"
+                                 placeholder="Obrigatório"/>
+                    <p:outputLabel for="txtAutor" value="Autor"/>
+                    <p:inputText id="txtAutor" value="#{controleExercicio.objeto.autor}"
+                                 size="40" maxlength="40"
+                                 placeholder="Obrigatório"/>
+                    <p:outputLabel for="selectTecnica" value="Técnica"/>
+                    <p:selectOneMenu id="selectTecnica" value="#{controleExercicio.objeto.tecnica}">
+                        <f:converter converterId="converterTecnica"/>
+                        <f:selectItem noSelectionOption="true" itemLabel="Selecione uma técnica"/>
+                        <f:selectItems value="#{controleExercicio.daoTecnica.listaTodos}" var="set" itemLabel="#{set.nome}"/>
+                    </p:selectOneMenu>
+                    <p:outputLabel
+                        value="Descrição"
+                        for="edtDescricao"/>
+                    <p:editor
+                        id="edtDescricao"
+                        widgetVar="edtEdescricao"
+                        value="#{controleExercicio.objeto.desccricao}"/>
+                </p:panelGrid>
+            </div>
+        </h:panelGroup>
+    </h:form>
+</html>
+

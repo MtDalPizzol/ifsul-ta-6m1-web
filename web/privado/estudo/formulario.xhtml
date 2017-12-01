@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:form id="formEdicao">
+        <h:panelGroup rendered="#{controleEstudo.editando}">
+            <div class="ui-fluid">
+                <p:messages/>
+                <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10"
+                             layout="grid">
+                    <f:facet name="header">
+                        <p:outputLabel value="Edição de estudos"/>
+                    </f:facet>
+                    <f:facet name="footer">
+                        <div align="center">
+                            <p:commandButton value="Salvar" icon="ui-icon-disk"
+                                             actionListener="#{controleEstudo.salvar()}"
+                                             update="formEdicao :formListagem"/>
+                        </div>
+                    </f:facet>
+
+                    <p:outputLabel for="txtData" value="Data"/>
+                    <p:calendar
+                        id="txtData"
+                        value="#{controleEstudo.objeto.data}"
+                        mask="true"
+                        pattern="dd/MM/yyyy HH:mm"
+                        navigator="true">
+                        <f:converter converterId="converterDiaHora"/>
+                    </p:calendar>
+                    
+                    <p:outputLabel value="Instrumento" for="txtInstrumento"/>
+                    <p:inputText id="txtInstrumento" value="#{controleEstudo.objeto.instrumento}" size="20" maxlength="20" />
+                    
+                    <p:outputLabel
+                        value="Anotações"
+                        for="edtAnotacao"/>
+                    <p:editor
+                        id="edtAnotacao"
+                        widgetVar="edtAnotacoes"
+                        value="#{controleEstudo.objeto.anotacoes}"/>
+
+                </p:panelGrid>
+
+                <br/>
+
+                <h:panelGroup id="painelExecucao">
+                    <p:panelGrid columns="2" columnClasses="ui-grid-col-2, ui-grid-col-10"
+                                 layout="grid" rendered="#{controleEstudo.editandoExecucao}">
+                        <f:facet name="header">
+                            <p:outputLabel value="Edição de execução"/>
+                        </f:facet>
+                        <f:facet name="footer">
+                            <div>
+                                <p:commandButton value="Salvar execucao" icon="ui-icon-disk"
+                                                 actionListener="#{controleEstudo.salvarExecucao()}"
+                                                 update="@form"/>
+                            </div>
+                        </f:facet>
+
+                        <p:outputLabel value="Exercício" for="selectExercicio"/>
+                        <p:selectOneMenu id="selectExercicio" value="#{controleEstudo.execucao.exercicio}">
+                            <f:converter converterId="converterExercicio"/>
+                            <f:selectItem itemLabel="Selecione um exercício"
+                                          noSelectionOption="true"/>
+                            <f:selectItems value="#{controleEstudo.daoExercicio.listaTodos}"
+                                           var="exe" itemLabel="#{exe.tecnica.nome.concat(' - ').concat(exe.nome)}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="BPM" for="txtBPM"/>
+                        <p:inputNumber id="txtBPM" value="#{controleEstudo.execucao.bpm}"
+                                       size="5" decimalPlaces="0" thousandSeparator=""/>
+
+                        <p:outputLabel for="txtInicio" value="Início"/>
+                        <p:calendar id="txtInicio"
+                                    value="#{controleEstudo.execucao.inicio}"
+                                    mask="true"
+                                    pattern="HH:mm"
+                                    timeOnly="true">
+                            <f:converter converterId="converterHora"/>
+                        </p:calendar>
+
+                        <p:outputLabel for="txtFim" value="Fim"/>
+                        <p:calendar id="txtFim"
+                                    value="#{controleEstudo.execucao.fim}"
+                                    mask="true"
+                                    pattern="HH:mm"
+                                    timeOnly="true">
+                            <f:converter converterId="converterHora"/>
+                        </p:calendar>
+
+                        <p:outputLabel
+                            value="Feedback"
+                            for="edtFeedback"/>
+                        <p:editor
+                            id="edtFeedback"
+                            widgetVar="edtFeedback"
+                            value="#{controleEstudo.execucao.feedback}"/>
+
+                    </p:panelGrid>
+                </h:panelGroup>                
+
+            </div>
+
+            <h:panelGroup id="listagemExecucao">
+                <h:panelGroup rendered="#{!controleEstudo.editandoExecucao}">
+                    <p:commandButton value="Nova execução" icon="ui-icon-plus"
+                                     actionListener="#{controleEstudo.novaExecucao()}"
+                                     update="painelExecucao listagemExecucao"/>
+                    <br/><br/>
+                    <p:dataTable value="#{controleEstudo.objeto.execucoes}"
+                                 var="col" reflow="true" rowIndexVar="idx">
+                        <f:facet name="header">
+                            <p:outputLabel value="Execuções"/>
+                        </f:facet>
+                        <p:column headerText="Exercício">
+                            <p:outputLabel value="#{col.exercicio.tecnica.nome.concat(' - ').concat(col.exercicio.nome)}"/>
+                        </p:column>
+                        <p:column headerText="BPM">
+                            <p:outputLabel value="#{col.bpm}"/>
+                        </p:column>
+                        <p:column headerText="Início">
+                            <p:outputLabel value="#{col.inicio.time}">
+                                <f:convertDateTime type="time" pattern="HH:mm" timeZone="America/Sao_Paulo" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Fim">
+                            <p:outputLabel value="#{col.fim.time}">
+                                <f:convertDateTime type="time" pattern="HH:mm" timeZone="America/Sao_Paulo" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Ações">
+                            <div align="center">
+                                <p:commandButton icon="ui-icon-pencil"
+                                                 actionListener="#{controleEstudo.alterarExecucao(idx)}"
+                                                 process="@this"
+                                                 update="@form"/>
+                                <p:commandButton icon="ui-icon-trash"
+                                                 action="#{controleEstudo.excluirExecucao(idx)}"
+                                                 process="@this"
+                                                 update="@form"/>
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </h:panelGroup>
+
+        </h:panelGroup>
+    </h:form>
+</html>
+
